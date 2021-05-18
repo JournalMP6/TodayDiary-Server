@@ -46,7 +46,9 @@ tasks.jacocoTestCoverageVerification {
 				value = "TOTALCOUNT"
 				maximum = "200".toBigDecimal()
 			}
-			excludes = listOf()
+			excludes = listOf(
+				"com.mptsix.todaydiary.TodayDiaryServerApplicationKt"
+			)
 		}
 	}
 }

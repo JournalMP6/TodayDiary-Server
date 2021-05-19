@@ -50,7 +50,10 @@ tasks.jacocoTestCoverageVerification {
 				"com.mptsix.todaydiary.TodayDiaryServerApplicationKt",
 				"com.mptsix.todaydiary.error.*",
 				"com.mptsix.todaydiary.data.request.*",
-				"com.mptsix.todaydiary.data.response.*"
+				"com.mptsix.todaydiary.data.response.*",
+				"com.mptsix.todaydiary.data.User",
+				"com.mptsix.todaydiary.data.User.*",
+				"com.mptsix.todaydiary.security.*"
 			)
 		}
 	}

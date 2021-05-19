@@ -2,7 +2,7 @@ package com.mptsix.todaydiary.service
 
 import com.mptsix.todaydiary.data.User
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
-import com.mptsix.todaydiary.error.ConflictException
+import com.mptsix.todaydiary.error.exception.ConflictException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*

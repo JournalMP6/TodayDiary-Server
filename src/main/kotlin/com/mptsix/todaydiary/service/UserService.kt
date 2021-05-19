@@ -4,7 +4,7 @@ import com.mptsix.todaydiary.data.User
 import com.mptsix.todaydiary.data.UserRepository
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.data.response.UserRegisterResponse
-import com.mptsix.todaydiary.error.ConflictException
+import com.mptsix.todaydiary.error.exception.ConflictException
 import org.springframework.stereotype.Service
 
 @Service

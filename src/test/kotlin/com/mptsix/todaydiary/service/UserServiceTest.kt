@@ -1,8 +1,12 @@
 package com.mptsix.todaydiary.service
 
 import com.mptsix.todaydiary.data.User
+import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.error.exception.ConflictException
+import com.mptsix.todaydiary.error.exception.ForbiddenException
+import com.mptsix.todaydiary.error.exception.NotFoundException
+import com.mptsix.todaydiary.security.JWTTokenProvider
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
@@ -25,6 +29,9 @@ internal class UserServiceTest {
 
     @Autowired
     private lateinit var mongoTemplate: MongoTemplate
+
+    @Autowired
+    private lateinit var jwtTokenProvider: JWTTokenProvider
 
     private val mockUser: User = User(
         userId = "KangDroid",
@@ -103,5 +110,74 @@ internal class UserServiceTest {
 
     }
 
+    @Test
+    fun is_loginUser_works_well() {
+        // Register
+        val userRegisterRequest: UserRegisterRequest = UserRegisterRequest(
+            userId = "KangDroid",
+            userPassword = "test",
+            userName = "KDR",
+            userDateOfBirth = "WHENEVER",
+            userPasswordAnswer = "WHAT",
+            userPasswordQuestion = "WHAT"
+        )
+        userService.registerUser(userRegisterRequest)
 
+        val loginRequest: LoginRequest = LoginRequest(
+            userId = userRegisterRequest.userId,
+            userPassword = userRegisterRequest.userPassword
+        )
+
+        runCatching {
+            userService.loginUser(loginRequest)
+        }.onFailure {
+            fail("We registered user, but login failed?")
+        }.onSuccess {
+            assertThat(it.userToken).isNotEqualTo("")
+            assertThat(jwtTokenProvider.getUserPk(it.userToken)).isEqualTo(userRegisterRequest.userId)
+        }
+    }
+
+    @Test
+    fun is_loginUser_wrong_id() {
+        val loginRequest: LoginRequest = LoginRequest(
+            userId = "userRegisterRequest.userId",
+            userPassword = "userRegisterRequest.userPassword"
+        )
+
+        runCatching {
+            userService.loginUser(loginRequest)
+        }.onFailure {
+            assertThat(it is NotFoundException).isEqualTo(true)
+        }.onSuccess {
+            fail("DB is empty but login succeed somehow")
+        }
+    }
+
+    @Test
+    fun is_loginUser_wrong_password() {
+        // Register
+        val userRegisterRequest: UserRegisterRequest = UserRegisterRequest(
+            userId = "KangDroid",
+            userPassword = "test",
+            userName = "KDR",
+            userDateOfBirth = "WHENEVER",
+            userPasswordAnswer = "WHAT",
+            userPasswordQuestion = "WHAT"
+        )
+        userService.registerUser(userRegisterRequest)
+
+        val loginRequest: LoginRequest = LoginRequest(
+            userId = userRegisterRequest.userId,
+            userPassword = "userRegisterRequest.userPassword"
+        )
+
+        runCatching {
+            userService.loginUser(loginRequest)
+        }.onFailure {
+            assertThat(it is ForbiddenException).isEqualTo(true)
+        }.onSuccess {
+            fail("DB is empty but login succeed somehow")
+        }
+    }
 }

@@ -47,7 +47,10 @@ tasks.jacocoTestCoverageVerification {
 				maximum = "200".toBigDecimal()
 			}
 			excludes = listOf(
-				"com.mptsix.todaydiary.TodayDiaryServerApplicationKt"
+				"com.mptsix.todaydiary.TodayDiaryServerApplicationKt",
+				"com.mptsix.todaydiary.error.*",
+				"com.mptsix.todaydiary.data.request.*",
+				"com.mptsix.todaydiary.data.response.*"
 			)
 		}
 	}

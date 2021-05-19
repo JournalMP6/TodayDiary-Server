@@ -1,7 +1,9 @@
 package com.mptsix.todaydiary.controller
 
 import com.mptsix.todaydiary.data.User
+import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
+import com.mptsix.todaydiary.data.response.LoginResponse
 import com.mptsix.todaydiary.data.response.UserRegisterResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -57,4 +59,30 @@ internal class UserControllerTest {
         assertThat(responseEntity.hasBody()).isEqualTo(true)
         assertThat(responseEntity.body!!.registeredId).isEqualTo(userRegisterRequest.userId)
     }
+
+    @Test
+    fun is_loginUser_works_well() {
+        val userRegisterRequest: UserRegisterRequest = UserRegisterRequest(
+            userId = "KangDroid",
+            userPassword = "test",
+            userName = "KDR",
+            userDateOfBirth = "WHENEVER",
+            userPasswordAnswer = "WHAT",
+            userPasswordQuestion = "WHAT"
+        )
+        restTemplate.postForEntity<UserRegisterResponse>("${serverUrl}/api/v1/user", userRegisterRequest)
+
+        val loginRequest: LoginRequest = LoginRequest(
+            userId = userRegisterRequest.userId,
+            userPassword = userRegisterRequest.userPassword
+        )
+
+        val responseEntity: ResponseEntity<LoginResponse> =
+            restTemplate.postForEntity("${serverUrl}/api/v1/login", loginRequest)
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(responseEntity.hasBody()).isEqualTo(true)
+        assertThat(responseEntity.body!!.userToken).isNotEqualTo("")
+    }
+
 }

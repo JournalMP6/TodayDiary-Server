@@ -1,6 +1,8 @@
 package com.mptsix.todaydiary.controller
 
+import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
+import com.mptsix.todaydiary.data.response.LoginResponse
 import com.mptsix.todaydiary.data.response.UserRegisterResponse
 import com.mptsix.todaydiary.service.UserService
 import org.springframework.http.HttpStatus
@@ -18,5 +20,12 @@ class UserController(
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.registerUser(userRegisterRequest))
+    }
+
+    @PostMapping("/api/v1/login")
+    fun loginUser(@RequestBody loginRequest: LoginRequest): ResponseEntity<LoginResponse> {
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.loginUser(loginRequest))
     }
 }

@@ -17,7 +17,8 @@ data class UserRegisterRequest(
             userName = userName,
             userDateOfBirth = userDateOfBirth,
             userPasswordAnswer = userPasswordAnswer,
-            userPasswordQuestion = userPasswordQuestion
+            userPasswordQuestion = userPasswordQuestion,
+            roles = setOf("ROLE_USER")
         )
     }
 }

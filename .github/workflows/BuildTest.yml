@@ -36,7 +36,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: ServerJarFile
-          path: build/libs/CS-Libray-0.0.1-SNAPSHOT.jar
+          path: build/libs/TodayDiaryServer-0.0.1-SNAPSHOT.jar
 
   BuildWindows:
       # Name the Job

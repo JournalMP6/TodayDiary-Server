@@ -1,6 +1,6 @@
 package com.mptsix.todaydiary.security
 
-import com.mptsix.todaydiary.data.UserRepository
+import com.mptsix.todaydiary.data.user.UserRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service

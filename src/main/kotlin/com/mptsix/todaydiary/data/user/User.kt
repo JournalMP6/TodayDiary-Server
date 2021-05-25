@@ -1,4 +1,4 @@
-package com.mptsix.todaydiary.data
+package com.mptsix.todaydiary.data.user
 
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id

@@ -1,6 +1,6 @@
 package com.mptsix.todaydiary.data.request
 
-import com.mptsix.todaydiary.data.User
+import com.mptsix.todaydiary.data.user.User
 
 data class UserRegisterRequest(
     var userId: String, // Email Address

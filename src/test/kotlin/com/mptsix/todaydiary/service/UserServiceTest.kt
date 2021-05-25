@@ -1,6 +1,6 @@
 package com.mptsix.todaydiary.service
 
-import com.mptsix.todaydiary.data.User
+import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.error.exception.ConflictException

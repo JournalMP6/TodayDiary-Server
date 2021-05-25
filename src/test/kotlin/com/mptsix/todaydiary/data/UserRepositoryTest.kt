@@ -1,5 +1,7 @@
 package com.mptsix.todaydiary.data
 
+import com.mptsix.todaydiary.data.user.User
+import com.mptsix.todaydiary.data.user.UserRepository
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.AfterEach
@@ -12,7 +14,6 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.remove
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import java.lang.reflect.Method
 
 @SpringBootTest
 @ExtendWith(SpringExtension::class)

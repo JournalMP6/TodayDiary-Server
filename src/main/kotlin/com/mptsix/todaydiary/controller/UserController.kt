@@ -40,8 +40,9 @@ class UserController(
     }
 
     @PostMapping("/api/v1/journal/picture")
-    fun registerJournalPicture(@RequestHeader header: HttpHeaders, @RequestPart("uploadFile") file: MultipartFile, @RequestPart("journalDate") date: Long): ResponseEntity<Unit> {
+    fun registerJournalPicture(@RequestHeader header: HttpHeaders, @RequestPart("uploadFile") file: MultipartFile): ResponseEntity<Unit> {
         val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        val date: Long = header["JOURNAL-DATE"]!![0].toLong()
         userService.registerJournalPicture(userToken, file, date)
         return ResponseEntity.noContent().build()
     }

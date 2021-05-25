@@ -27,7 +27,7 @@ data class User(
     var roles: Set<String> = setOf(),
 
     // Journal Data[Integrated]
-    var journalData: List<Journal> = listOf()
+    var journalData: MutableList<Journal> = mutableListOf()
 ): UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority?>? {
         return roles.stream()

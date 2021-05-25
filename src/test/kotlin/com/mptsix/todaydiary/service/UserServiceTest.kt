@@ -3,6 +3,8 @@ package com.mptsix.todaydiary.service
 import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
+import com.mptsix.todaydiary.data.user.journal.Journal
+import com.mptsix.todaydiary.data.user.journal.JournalImage
 import com.mptsix.todaydiary.error.exception.ConflictException
 import com.mptsix.todaydiary.error.exception.ForbiddenException
 import com.mptsix.todaydiary.error.exception.NotFoundException
@@ -41,6 +43,26 @@ internal class UserServiceTest {
         userPasswordAnswer = "WHAT",
         userPasswordQuestion = "WHAT"
     )
+
+    fun loginUser(): String {
+        userService.registerUser(
+            UserRegisterRequest(
+                userId = mockUser.userId,
+                userPassword =  mockUser.userPassword,
+                userName = mockUser.userName,
+                userDateOfBirth = mockUser.userDateOfBirth,
+                userPasswordAnswer = mockUser.userPasswordAnswer,
+                userPasswordQuestion = mockUser.userPasswordQuestion
+            )
+        )
+
+        return userService.loginUser(
+            LoginRequest(
+                userId = mockUser.userId,
+                userPassword = mockUser.userPassword
+            )
+        ).userToken
+    }
 
     @BeforeEach
     @AfterEach
@@ -178,6 +200,37 @@ internal class UserServiceTest {
             assertThat(it is ForbiddenException).isEqualTo(true)
         }.onSuccess {
             fail("DB is empty but login succeed somehow")
+        }
+    }
+
+    @Test
+    fun is_registerJournal_404_crazy_token() {
+        runCatching {
+            userService.registerJournal("whatever", Journal("", "", "", "", 10, JournalImage()))
+        }.onSuccess {
+            fail("Token is invalid and it succeed?")
+        }.onFailure {
+            assertThat(it is NotFoundException).isEqualTo(true)
+        }
+    }
+
+    @Test
+    fun is_registerJournal_registers_well() {
+        val userToken: String = loginUser()
+        val mockJournal: Journal = Journal(
+            mainJournalContent = "Today was great!",
+            journalLocation = "Somewhere over the rainbow!",
+            journalCategory = "Somewhat_category",
+            journalWeather = "Sunny",
+            journalDate = System.currentTimeMillis()
+        )
+
+        runCatching {
+            userService.registerJournal(userToken, mockJournal)
+        }.onFailure {
+            fail("All data was set but it failed. StackTrace: ${it.stackTraceToString()}")
+        }.onSuccess {
+            assertThat(it.registeredJournal.mainJournalContent).isEqualTo(mockJournal.mainJournalContent)
         }
     }
 }

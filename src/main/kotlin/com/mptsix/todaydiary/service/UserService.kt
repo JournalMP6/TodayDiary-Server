@@ -8,13 +8,17 @@ import com.mptsix.todaydiary.data.response.JournalResponse
 import com.mptsix.todaydiary.data.response.LoginResponse
 import com.mptsix.todaydiary.data.response.UserRegisterResponse
 import com.mptsix.todaydiary.data.user.journal.Journal
+import com.mptsix.todaydiary.data.user.journal.JournalImage
 import com.mptsix.todaydiary.error.exception.ConflictException
 import com.mptsix.todaydiary.error.exception.ForbiddenException
 import com.mptsix.todaydiary.error.exception.NotFoundException
 import com.mptsix.todaydiary.security.JWTTokenProvider
+import org.bson.BsonBinarySubType
+import org.bson.types.Binary
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 class UserService(
@@ -47,6 +51,15 @@ class UserService(
             logger.error("Cannot find userID from user token! Probably expired or malformed?")
             logger.error("StackTrace: ${it.stackTraceToString()}")
             throw NotFoundException("Cannot find userID from user token!")
+        }
+    }
+
+    private fun checkJournalExists(user: User, journalDate: Long): Journal {
+        return user.journalData.find {
+            it.journalDate == journalDate
+        } ?: run {
+            logger.error("Cannot find journal data from ${user.userId}, target: $journalDate!")
+            throw NotFoundException("Cannot find Journal!")
         }
     }
 
@@ -87,5 +100,24 @@ class UserService(
         userRepository.addUser(user)
 
         return JournalResponse(journal)
+    }
+
+    fun registerJournalPicture(userToken: String, uploadPicture: MultipartFile, journalDate: Long) {
+        // Get User Entity
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
+
+        // Get Journal Data
+        val journalData: Journal = checkJournalExists(user, journalDate).apply {
+            journalImage = JournalImage(
+                Binary(BsonBinarySubType.BINARY, uploadPicture.bytes)
+            )
+        }
+
+        // Remove Journal Data from User
+        user.journalData.removeIf { it.journalDate == journalDate }
+
+        // Add Imaged-Data
+        user.journalData.add(journalData)
+        userRepository.addUser(user)
     }
 }

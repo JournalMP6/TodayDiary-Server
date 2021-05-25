@@ -3,6 +3,7 @@ package com.mptsix.todaydiary.service
 import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
+import com.mptsix.todaydiary.data.user.UserRepository
 import com.mptsix.todaydiary.data.user.journal.Journal
 import com.mptsix.todaydiary.data.user.journal.JournalImage
 import com.mptsix.todaydiary.error.exception.ConflictException
@@ -20,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.remove
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import java.lang.reflect.Method
 
@@ -28,6 +30,9 @@ import java.lang.reflect.Method
 internal class UserServiceTest {
     @Autowired
     private lateinit var userService: UserService
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
 
     @Autowired
     private lateinit var mongoTemplate: MongoTemplate
@@ -231,6 +236,47 @@ internal class UserServiceTest {
             fail("All data was set but it failed. StackTrace: ${it.stackTraceToString()}")
         }.onSuccess {
             assertThat(it.registeredJournal.mainJournalContent).isEqualTo(mockJournal.mainJournalContent)
+        }
+    }
+
+    @Test
+    fun is_registerJournalPicture_throws_404_no_journal() {
+        val loginToken: String = loginUser()
+        val multipartFile: MockMultipartFile = MockMultipartFile(
+            "test.txt", "test.txt", "text/plain", "file Upload Test".toByteArray()
+        )
+        runCatching {
+            userService.registerJournalPicture(loginToken, multipartFile, 5000)
+        }.onSuccess {
+            fail("Journal does not exists but it succeed?")
+        }.onFailure {
+            assertThat(it is NotFoundException).isEqualTo(true)
+        }
+    }
+
+    @Test
+    fun is_registerJournalPicture_ok() {
+        val loginToken: String = loginUser()
+        val multipartFile: MockMultipartFile = MockMultipartFile(
+            "test.txt", "test.txt", "text/plain", "file Upload Test".toByteArray()
+        )
+        val mockJournal: Journal = Journal(
+            mainJournalContent = "Today was great!",
+            journalLocation = "Somewhere over the rainbow!",
+            journalCategory = "Somewhat_category",
+            journalWeather = "Sunny",
+            journalDate = 2000
+        )
+        userService.registerJournal(loginToken, mockJournal)
+        runCatching {
+            userService.registerJournalPicture(loginToken, multipartFile, mockJournal.journalDate)
+        }.onSuccess {
+            val user: User = userRepository.findByUserId(mockUser.userId)
+            val journal: Journal = user.journalData[0]
+            assertThat(journal.journalDate).isEqualTo(mockJournal.journalDate)
+            assertThat(journal.journalImage.imageFile).isNotEqualTo(null)
+        }.onFailure {
+            fail("All data is set, but registering journal picture failed")
         }
     }
 }

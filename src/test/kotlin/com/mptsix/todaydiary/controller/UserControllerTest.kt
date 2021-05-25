@@ -1,11 +1,11 @@
 package com.mptsix.todaydiary.controller
 
-import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.data.response.JournalResponse
 import com.mptsix.todaydiary.data.response.LoginResponse
 import com.mptsix.todaydiary.data.response.UserRegisterResponse
+import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.user.journal.Journal
 import com.mptsix.todaydiary.service.UserService
 import org.assertj.core.api.Assertions.assertThat
@@ -23,7 +23,17 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.remove
 import org.springframework.http.*
+import org.springframework.http.ResponseEntity.status
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.test.web.servlet.MockMvc
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import org.springframework.web.context.WebApplicationContext
+import java.io.ByteArrayOutputStream
+import java.io.DataOutputStream
+
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ExtendWith(SpringExtension::class)
@@ -37,15 +47,20 @@ internal class UserControllerTest {
     @Autowired
     private lateinit var userService: UserService
 
+    @Autowired
+    private lateinit var webApplicationContext: WebApplicationContext
+
     private val restTemplate: TestRestTemplate = TestRestTemplate()
 
     private var serverUrl: String = "http://localhost:$port"
+    private lateinit var mockMvc : MockMvc
 
     @BeforeEach
     @AfterEach
     fun clearDb() {
         serverUrl = "http://localhost:$port"
         mongoTemplate.remove<User>(Query())
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build()
     }
 
     fun loginUser(): String {
@@ -132,5 +147,4 @@ internal class UserControllerTest {
         assertThat(journalResponse.body!!.registeredJournal.mainJournalContent)
             .isEqualTo(mockJournal.mainJournalContent)
     }
-
 }

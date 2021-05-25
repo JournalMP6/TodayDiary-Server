@@ -1,5 +1,6 @@
 package com.mptsix.todaydiary.data.user
 
+import com.mptsix.todaydiary.data.user.journal.Journal
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -23,7 +24,10 @@ data class User(
     var userPasswordAnswer: String,
 
     // For Internal Permission Setup
-    var roles: Set<String> = setOf()
+    var roles: Set<String> = setOf(),
+
+    // Journal Data[Integrated]
+    var journalData: List<Journal> = listOf()
 ): UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority?>? {
         return roles.stream()

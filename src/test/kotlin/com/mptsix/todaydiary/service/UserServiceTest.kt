@@ -279,4 +279,42 @@ internal class UserServiceTest {
             fail("All data is set, but registering journal picture failed")
         }
     }
+
+    @Test
+    fun is_getJournal_throws_404() {
+        val loginToken: String = loginUser()
+        runCatching {
+            userService.getJournal(loginToken, -1000)
+        }.onSuccess {
+            fail("We do not have any journal but it succeed?")
+        }.onFailure {
+            assertThat(it is NotFoundException).isEqualTo(true)
+        }
+    }
+
+    @Test
+    fun is_getJournal_works_well() {
+        val loginToken: String = loginUser()
+        val mockJournal: Journal = Journal(
+            mainJournalContent = "Today was great!",
+            journalLocation = "Somewhere over the rainbow!",
+            journalCategory = "Somewhat_category",
+            journalWeather = "Sunny",
+            journalDate = 2000
+        )
+        userService.registerJournal(loginToken, mockJournal)
+
+        runCatching {
+            userService.getJournal(loginToken, mockJournal.journalDate)
+        }.onSuccess {
+            assertThat(it.journalDate).isEqualTo(mockJournal.journalDate)
+            assertThat(it.mainJournalContent).isEqualTo(mockJournal.mainJournalContent)
+            assertThat(it.journalLocation).isEqualTo(mockJournal.journalLocation)
+            assertThat(it.journalCategory).isEqualTo(mockJournal.journalCategory)
+            assertThat(it.journalWeather).isEqualTo(mockJournal.journalWeather)
+        }.onFailure {
+            println(it.stackTraceToString())
+            fail("We've mocked up journal data but it failed")
+        }
+    }
 }

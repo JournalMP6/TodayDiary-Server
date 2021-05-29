@@ -46,4 +46,21 @@ class UserController(
         userService.registerJournalPicture(userToken, file, date)
         return ResponseEntity.noContent().build()
     }
+
+    @GetMapping("/api/v1/journal/{time}")
+    fun getJournal(@RequestHeader header: HttpHeaders, @PathVariable("time") journalDate: Long): ResponseEntity<Journal> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(
+                userService.getJournal(userToken, journalDate)
+            )
+    }
+
+    @PutMapping("/api/v1/journal")
+    fun editJournal(@RequestHeader header: HttpHeaders, @RequestBody journal: Journal): ResponseEntity<Unit> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        userService.editJournal(userToken, journal)
+        return ResponseEntity.noContent().build()
+    }
 }

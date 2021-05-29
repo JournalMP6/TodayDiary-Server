@@ -53,7 +53,8 @@ tasks.jacocoTestCoverageVerification {
 				"com.mptsix.todaydiary.data.response.*",
 				"com.mptsix.todaydiary.data.user.**",
 				"com.mptsix.todaydiary.security.*",
-				"com.mptsix.todaydiary.service.UserService.registerJournalPicture.**"
+				"com.mptsix.todaydiary.service.UserService.registerJournalPicture.**",
+				"com.mptsix.todaydiary.service.UserService.editJournal.*"
 			)
 		}
 	}

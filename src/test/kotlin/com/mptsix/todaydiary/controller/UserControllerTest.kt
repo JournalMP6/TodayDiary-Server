@@ -186,4 +186,56 @@ internal class UserControllerTest {
             }
 
     }
+
+    @Test
+    fun is_getJournal_works_well() {
+        val mockJournal: Journal = Journal(
+            mainJournalContent = "Today was great!",
+            journalLocation = "Somewhere over the rainbow!",
+            journalCategory = "Somewhat_category",
+            journalWeather = "Sunny",
+            journalDate = System.currentTimeMillis()
+        )
+        val loginToken: String = loginUser()
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+        userService.registerJournal(loginToken, mockJournal)
+        val url: String = "${serverUrl}/api/v1/journal/${mockJournal.journalDate}"
+        val responseEntity: ResponseEntity<Journal> =
+            restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Unit>(httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(responseEntity.hasBody()).isEqualTo(true)
+        assertThat(responseEntity.body!!.journalDate).isEqualTo(mockJournal.journalDate)
+    }
+
+    @Test
+    fun is_editJournal_works_well() {
+        val mockJournal: Journal = Journal(
+            mainJournalContent = "Today was great!",
+            journalLocation = "Somewhere over the rainbow!",
+            journalCategory = "Somewhat_category",
+            journalWeather = "Sunny",
+            journalDate = System.currentTimeMillis()
+        )
+        val loginToken: String = loginUser()
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+        userService.registerJournal(loginToken, mockJournal)
+
+        val url: String = "${serverUrl}/api/v1/journal"
+        val changedJournal: Journal = Journal(
+            mainJournalContent = "Today was great!",
+            journalLocation = "Somewhere over the rainbow!2",
+            journalCategory = "Somewhat_category",
+            journalWeather = "Sunny2",
+            journalDate = mockJournal.journalDate
+        )
+        val responseEntity: ResponseEntity<Unit> =
+            restTemplate.exchange(url, HttpMethod.PUT, HttpEntity<Journal>(changedJournal, httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
+    }
 }

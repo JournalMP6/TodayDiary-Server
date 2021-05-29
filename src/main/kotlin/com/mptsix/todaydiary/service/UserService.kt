@@ -125,7 +125,17 @@ class UserService(
         // get User Entity
         val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
         return user.journalData.find { it.journalDate == journalDate } ?: run {
+            logger.error("Cannot get journal data for user: ${user.userId}, with journalDate: $journalDate")
             throw NotFoundException("Cannot get journal data for user: ${user.userId}, with journalDate: $journalDate")
         }
+    }
+
+    fun editJournal(userToken: String, journal: Journal) {
+        // get User Entity
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
+        user.journalData.removeIf {it.journalDate == journal.journalDate}
+        user.journalData.add(journal)
+
+        userRepository.addUser(user)
     }
 }

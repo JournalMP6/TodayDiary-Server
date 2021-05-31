@@ -54,15 +54,6 @@ class UserService(
         }
     }
 
-    private fun checkJournalExists(user: User, journalDate: Long): Journal {
-        return user.journalData.find {
-            it.journalDate == journalDate
-        } ?: run {
-            logger.error("Cannot find journal data from ${user.userId}, target: $journalDate!")
-            throw NotFoundException("Cannot find Journal!")
-        }
-    }
-
     fun registerUser(userRegisterRequest: UserRegisterRequest): UserRegisterResponse {
         if (checkUserExistsByUserId(userRegisterRequest.userId)) {
             throw ConflictException("User ID: ${userRegisterRequest.userId} already exists!")
@@ -93,32 +84,26 @@ class UserService(
 
     // Journal
     fun registerJournal(userToken: String, journal: Journal): JournalResponse {
-        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken)).apply {
-            journalData.add(journal)
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
+        val isEdit: Journal? = user.journalData.find {it.journalDate == journal.journalDate}
+        if (isEdit == null) {
+            // Not Found, Register
+            logger.info("Journal for user: ${user.userId} && ${journal.journalDate} not found.")
+            logger.info("Registering new journal data ${journal.journalDate}")
+        } else {
+            // Found, Edit
+            logger.info("Journal is already exists! Just updating journal data..")
+            user.journalData.removeIf {it.journalDate == journal.journalDate}
         }
+
         // Update User DB
+        user.journalData.add(journal)
         userRepository.addUser(user)
+
+        logger.info("Register journal!")
+        logger.info(journal.journalImage.imageFile?.toString())
 
         return JournalResponse(journal)
-    }
-
-    fun registerJournalPicture(userToken: String, uploadPicture: MultipartFile, journalDate: Long) {
-        // Get User Entity
-        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
-
-        // Get Journal Data
-        val journalData: Journal = checkJournalExists(user, journalDate).apply {
-            journalImage = JournalImage(
-                Binary(BsonBinarySubType.BINARY, uploadPicture.bytes)
-            )
-        }
-
-        // Remove Journal Data from User
-        user.journalData.removeIf { it.journalDate == journalDate }
-
-        // Add Imaged-Data
-        user.journalData.add(journalData)
-        userRepository.addUser(user)
     }
 
     fun getJournal(userToken: String, journalDate: Long): Journal {
@@ -128,14 +113,5 @@ class UserService(
             logger.error("Cannot get journal data for user: ${user.userId}, with journalDate: $journalDate")
             throw NotFoundException("Cannot get journal data for user: ${user.userId}, with journalDate: $journalDate")
         }
-    }
-
-    fun editJournal(userToken: String, journal: Journal) {
-        // get User Entity
-        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
-        user.journalData.removeIf {it.journalDate == journal.journalDate}
-        user.journalData.add(journal)
-
-        userRepository.addUser(user)
     }
 }

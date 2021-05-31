@@ -240,43 +240,24 @@ internal class UserServiceTest {
     }
 
     @Test
-    fun is_registerJournalPicture_throws_404_no_journal() {
-        val loginToken: String = loginUser()
-        val multipartFile: MockMultipartFile = MockMultipartFile(
-            "test.txt", "test.txt", "text/plain", "file Upload Test".toByteArray()
-        )
-        runCatching {
-            userService.registerJournalPicture(loginToken, multipartFile, 5000)
-        }.onSuccess {
-            fail("Journal does not exists but it succeed?")
-        }.onFailure {
-            assertThat(it is NotFoundException).isEqualTo(true)
-        }
-    }
-
-    @Test
-    fun is_registerJournalPicture_ok() {
-        val loginToken: String = loginUser()
-        val multipartFile: MockMultipartFile = MockMultipartFile(
-            "test.txt", "test.txt", "text/plain", "file Upload Test".toByteArray()
-        )
+    fun is_registerJournal_edit_well() {
+        val userToken: String = loginUser()
         val mockJournal: Journal = Journal(
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
             journalCategory = "Somewhat_category",
             journalWeather = "Sunny",
-            journalDate = 2000
+            journalDate = System.currentTimeMillis()
         )
-        userService.registerJournal(loginToken, mockJournal)
+        userService.registerJournal(userToken, mockJournal)
+
         runCatching {
-            userService.registerJournalPicture(loginToken, multipartFile, mockJournal.journalDate)
-        }.onSuccess {
-            val user: User = userRepository.findByUserId(mockUser.userId)
-            val journal: Journal = user.journalData[0]
-            assertThat(journal.journalDate).isEqualTo(mockJournal.journalDate)
-            assertThat(journal.journalImage.imageFile).isNotEqualTo(null)
+            userService.registerJournal(userToken, mockJournal.apply {mainJournalContent = "test"})
         }.onFailure {
-            fail("All data is set, but registering journal picture failed")
+            fail("All data was set but it failed. StackTrace: ${it.stackTraceToString()}")
+        }.onSuccess {
+            assertThat(it.registeredJournal.mainJournalContent).isEqualTo("test")
+            assertThat(it.registeredJournal.journalLocation).isEqualTo(mockJournal.journalLocation)
         }
     }
 

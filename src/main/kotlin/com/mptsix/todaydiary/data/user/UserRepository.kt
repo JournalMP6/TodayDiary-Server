@@ -1,8 +1,11 @@
 package com.mptsix.todaydiary.data.user
 
+import com.mptsix.todaydiary.data.user.journal.CategoryCountResult
+import com.mptsix.todaydiary.error.exception.NotFoundException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.aggregation.*
 import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -17,6 +20,8 @@ class UserRepository(
     // Field
     private val userIdField: String = "userId"
     private val userNameField: String = "userName"
+    private val journalField: String = "journalData"
+    private val userJournalCategoryField: String = "journalData.journalCategory"
 
     // For getting query object for find where 'field' = fieldTargetValue
     private fun getQueryForFindBy(fieldName: String, fieldTargetValue: String): Query {
@@ -47,4 +52,38 @@ class UserRepository(
 
     // Find User by User Name
     fun findByUserName(userName: String): User = findOneByQuery(userNameField, userName)
+
+    // Find category size by user id / by category name
+    fun findCategorySizeByUserId(categoryName: String, userId:String):Int {
+        // First, match user Id
+        val matchOperation: MatchOperation = MatchOperation(Criteria.where(userIdField).`is`(userId))
+
+        // Unwind it
+        val unwindOperation: UnwindOperation = Aggregation.unwind(journalField)
+
+        // Match Category
+        val matchOperationCategory: MatchOperation = MatchOperation(
+            Criteria.where(userJournalCategoryField).`is`(categoryName)
+        )
+
+        // Count
+        val countOperation: CountOperation = CountOperation("categoryCount")
+
+        val aggregationResult: AggregationResults<CategoryCountResult> = mongoTemplate.aggregate(
+            Aggregation.newAggregation(
+                matchOperation,
+                unwindOperation,
+                matchOperationCategory,
+                countOperation
+            ),
+            User::class.java,
+            CategoryCountResult::class.java
+        )
+
+        if (aggregationResult.mappedResults.isEmpty()) {
+            throw NotFoundException("Cannot find data!")
+        }
+
+        return aggregationResult.mappedResults[0].categoryCount
+    }
 }

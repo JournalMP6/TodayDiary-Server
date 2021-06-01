@@ -2,6 +2,8 @@ package com.mptsix.todaydiary.data
 
 import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.user.UserRepository
+import com.mptsix.todaydiary.data.user.journal.Journal
+import com.mptsix.todaydiary.error.exception.NotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.AfterEach
@@ -101,6 +103,73 @@ internal class UserRepositoryTest {
             assertThat(it.userDateOfBirth).isEqualTo(mockUser.userDateOfBirth)
             assertThat(it.userPasswordAnswer).isEqualTo(mockUser.userPasswordAnswer)
             assertThat(it.userPasswordQuestion).isEqualTo(mockUser.userPasswordQuestion)
+        }
+    }
+
+    @Test
+    fun is_findCategorySizeByUserId_works_well() {
+        val mockUserWithJournal: User = User(
+            userId = "KangDroid",
+            userPassword = "test",
+            userName = "KDR",
+            userDateOfBirth = "WHENEVER",
+            userPasswordAnswer = "WHAT",
+            userPasswordQuestion = "WHAT",
+            journalData = mutableListOf(
+                Journal(
+                    mainJournalContent = "",
+                    journalLocation = "",
+                    journalCategory = "TEST",
+                    journalWeather = "",
+                    journalDate = -1
+                ),
+                Journal(
+                    mainJournalContent = "",
+                    journalLocation = "",
+                    journalCategory = "TEST",
+                    journalWeather = "",
+                    journalDate = -1
+                ),
+                Journal(
+                    mainJournalContent = "",
+                    journalLocation = "",
+                    journalCategory = "TEST",
+                    journalWeather = "",
+                    journalDate = -1
+                )
+            )
+        )
+        userRepository.addUser(mockUserWithJournal)
+
+        runCatching {
+            userRepository.findCategorySizeByUserId("TEST", "KangDroid")
+        }.onFailure {
+            println(it.stackTraceToString())
+            fail("It failed!")
+        }.onSuccess {
+            assertThat(it).isEqualTo(3)
+        }
+    }
+
+    @Test
+    fun is_findCategorySizeByUserId_throws_notfoundexception_() {
+        val mockUserWithJournal: User = User(
+            userId = "KangDroid",
+            userPassword = "test",
+            userName = "KDR",
+            userDateOfBirth = "WHENEVER",
+            userPasswordAnswer = "WHAT",
+            userPasswordQuestion = "WHAT",
+            journalData = mutableListOf()
+        )
+        userRepository.addUser(mockUserWithJournal)
+
+        runCatching {
+            userRepository.findCategorySizeByUserId("TEST", "KangDroid")
+        }.onFailure {
+            assertThat(it is NotFoundException).isEqualTo(true)
+        }.onSuccess {
+            fail("We do not have such category but passed?")
         }
     }
 

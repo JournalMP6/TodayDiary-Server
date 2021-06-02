@@ -5,6 +5,7 @@ import com.mptsix.todaydiary.data.user.UserRepository
 import com.mptsix.todaydiary.data.user.journal.Journal
 import com.mptsix.todaydiary.data.user.journal.JournalCategory
 import com.mptsix.todaydiary.error.exception.NotFoundException
+import com.mptsix.todaydiary.error.exception.UnknownErrorException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.AfterEach
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.findAll
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.remove
 import org.springframework.test.context.junit.jupiter.SpringExtension
@@ -169,6 +171,41 @@ internal class UserRepositoryTest {
             userRepository.findCategorySizeByUserId("TEST", "KangDroid")
         }.onSuccess {
             assertThat(it).isEqualTo(0)
+        }
+    }
+
+    @Test
+    fun is_removeUser_works_well() {
+        val mockUserWithJournal: User = User(
+            userId = "KangDroid",
+            userPassword = "test",
+            userName = "KDR",
+            userDateOfBirth = "WHENEVER",
+            userPasswordAnswer = "WHAT",
+            userPasswordQuestion = "WHAT",
+            journalData = mutableListOf()
+        )
+        userRepository.addUser(mockUserWithJournal)
+
+        runCatching {
+            userRepository.removeUser(mockUserWithJournal.userId)
+        }.onFailure {
+            println(it.stackTraceToString())
+            fail("Should be succeed!")
+        }.onSuccess {
+            val userList: List<User> = mongoTemplate.findAll()
+            assertThat(userList.isEmpty()).isEqualTo(true)
+        }
+    }
+
+    @Test
+    fun is_removeUser_throws_unknownerror() {
+        runCatching {
+            userRepository.removeUser("mockUserWithJournal.userId")
+        }.onFailure {
+            assertThat(it is UnknownErrorException).isEqualTo(true)
+        }.onSuccess {
+            fail("User list is empty but it succeed?")
         }
     }
 

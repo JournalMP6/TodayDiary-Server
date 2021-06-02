@@ -1,7 +1,9 @@
 package com.mptsix.todaydiary.data.user
 
+import com.mongodb.client.result.DeleteResult
 import com.mptsix.todaydiary.data.user.journal.CategoryCountResult
 import com.mptsix.todaydiary.error.exception.NotFoundException
+import com.mptsix.todaydiary.error.exception.UnknownErrorException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.MongoTemplate
@@ -85,5 +87,19 @@ class UserRepository(
         }
 
         return aggregationResult.mappedResults[0].categoryCount
+    }
+
+    fun removeUser(userId: String) {
+        val removeQuery: Query = Query(
+            Criteria.where(userIdField).`is`(userId)
+        )
+        val removeResult: DeleteResult = mongoTemplate.remove(removeQuery, User::class.java)
+
+        if (!removeResult.wasAcknowledged() || removeResult.deletedCount != 1L) {
+            logger.error("Cannot remove user: ${userId}!")
+            logger.error("Query: $removeQuery")
+            logger.error("Result: $removeResult")
+            throw UnknownErrorException("Remove failed for userId: $userId")
+        }
     }
 }

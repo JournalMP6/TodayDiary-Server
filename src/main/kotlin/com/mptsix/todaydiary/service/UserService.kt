@@ -122,4 +122,8 @@ class UserService(
         }
         userRepository.addUser(user)
     }
+
+    fun removeUser(userToken: String) {
+        userRepository.removeUser(getUserIdFromToken(userToken))
+    }
 }

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.findAll
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.data.mongodb.core.remove
 import org.springframework.mock.web.MockMultipartFile
@@ -308,5 +309,14 @@ internal class UserServiceTest {
 
         val user: User = userRepository.findByUserId(mockUser.userId)
         assertThat(user.userPassword).isEqualTo("whatever")
+    }
+
+    @Test
+    fun is_removeUser_works_well() {
+        val loginToken: String = loginUser()
+        userService.removeUser(loginToken)
+
+        val userList: List<User> = mongoTemplate.findAll()
+        assertThat(userList.isEmpty()).isEqualTo(true)
     }
 }

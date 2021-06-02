@@ -56,4 +56,11 @@ class UserController(
         userService.changePassword(userToken, passwordChangeRequest)
         return ResponseEntity.noContent().build()
     }
+
+    @DeleteMapping("/api/v1/user")
+    fun removeUser(@RequestHeader header: HttpHeaders): ResponseEntity<Unit> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        userService.removeUser(userToken)
+        return ResponseEntity.noContent().build()
+    }
 }

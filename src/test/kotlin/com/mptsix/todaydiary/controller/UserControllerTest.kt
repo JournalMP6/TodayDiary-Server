@@ -7,6 +7,7 @@ import com.mptsix.todaydiary.data.response.LoginResponse
 import com.mptsix.todaydiary.data.response.UserRegisterResponse
 import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.user.journal.Journal
+import com.mptsix.todaydiary.data.user.journal.JournalCategory
 import com.mptsix.todaydiary.service.UserService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
@@ -133,7 +134,7 @@ internal class UserControllerTest {
         val mockJournal: Journal = Journal(
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
-            journalCategory = "Somewhat_category",
+            journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
             journalWeather = "Sunny",
             journalDate = System.currentTimeMillis()
         )
@@ -156,7 +157,7 @@ internal class UserControllerTest {
         val mockJournal: Journal = Journal(
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
-            journalCategory = "Somewhat_category",
+            journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
             journalWeather = "Sunny",
             journalDate = System.currentTimeMillis()
         )

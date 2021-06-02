@@ -3,6 +3,7 @@ package com.mptsix.todaydiary.data
 import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.user.UserRepository
 import com.mptsix.todaydiary.data.user.journal.Journal
+import com.mptsix.todaydiary.data.user.journal.JournalCategory
 import com.mptsix.todaydiary.error.exception.NotFoundException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
@@ -119,21 +120,21 @@ internal class UserRepositoryTest {
                 Journal(
                     mainJournalContent = "",
                     journalLocation = "",
-                    journalCategory = "TEST",
+                    journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
                     journalWeather = "",
                     journalDate = -1
                 ),
                 Journal(
                     mainJournalContent = "",
                     journalLocation = "",
-                    journalCategory = "TEST",
+                    journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
                     journalWeather = "",
                     journalDate = -1
                 ),
                 Journal(
                     mainJournalContent = "",
                     journalLocation = "",
-                    journalCategory = "TEST",
+                    journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
                     journalWeather = "",
                     journalDate = -1
                 )
@@ -142,7 +143,7 @@ internal class UserRepositoryTest {
         userRepository.addUser(mockUserWithJournal)
 
         runCatching {
-            userRepository.findCategorySizeByUserId("TEST", "KangDroid")
+            userRepository.findCategorySizeByUserId(JournalCategory.ACHIEVEMENT_JOURNAL.name, "KangDroid")
         }.onFailure {
             println(it.stackTraceToString())
             fail("It failed!")

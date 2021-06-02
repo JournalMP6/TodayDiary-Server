@@ -5,6 +5,7 @@ import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.data.user.UserRepository
 import com.mptsix.todaydiary.data.user.journal.Journal
+import com.mptsix.todaydiary.data.user.journal.JournalCategory
 import com.mptsix.todaydiary.data.user.journal.JournalImage
 import com.mptsix.todaydiary.error.exception.ConflictException
 import com.mptsix.todaydiary.error.exception.ForbiddenException
@@ -211,7 +212,7 @@ internal class UserServiceTest {
     @Test
     fun is_registerJournal_404_crazy_token() {
         runCatching {
-            userService.registerJournal("whatever", Journal("", "", "", "", 10, JournalImage()))
+            userService.registerJournal("whatever", Journal("", "", JournalCategory.ACHIEVEMENT_JOURNAL, "", 10, JournalImage()))
         }.onSuccess {
             fail("Token is invalid and it succeed?")
         }.onFailure {
@@ -225,7 +226,7 @@ internal class UserServiceTest {
         val mockJournal: Journal = Journal(
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
-            journalCategory = "Somewhat_category",
+            journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
             journalWeather = "Sunny",
             journalDate = System.currentTimeMillis()
         )
@@ -245,7 +246,7 @@ internal class UserServiceTest {
         val mockJournal: Journal = Journal(
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
-            journalCategory = "Somewhat_category",
+            journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
             journalWeather = "Sunny",
             journalDate = System.currentTimeMillis()
         )
@@ -279,7 +280,7 @@ internal class UserServiceTest {
         val mockJournal: Journal = Journal(
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
-            journalCategory = "Somewhat_category",
+            journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
             journalWeather = "Sunny",
             journalDate = 2000
         )

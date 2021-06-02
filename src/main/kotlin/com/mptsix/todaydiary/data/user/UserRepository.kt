@@ -81,7 +81,7 @@ class UserRepository(
         )
 
         if (aggregationResult.mappedResults.isEmpty()) {
-            throw NotFoundException("Cannot find data!")
+            return 0
         }
 
         return aggregationResult.mappedResults[0].categoryCount

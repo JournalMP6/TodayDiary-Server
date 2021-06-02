@@ -153,7 +153,7 @@ internal class UserRepositoryTest {
     }
 
     @Test
-    fun is_findCategorySizeByUserId_throws_notfoundexception_() {
+    fun is_findCategorySizeByUserId_returns_zero() {
         val mockUserWithJournal: User = User(
             userId = "KangDroid",
             userPassword = "test",
@@ -167,10 +167,8 @@ internal class UserRepositoryTest {
 
         runCatching {
             userRepository.findCategorySizeByUserId("TEST", "KangDroid")
-        }.onFailure {
-            assertThat(it is NotFoundException).isEqualTo(true)
         }.onSuccess {
-            fail("We do not have such category but passed?")
+            assertThat(it).isEqualTo(0)
         }
     }
 

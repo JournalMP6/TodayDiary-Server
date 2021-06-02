@@ -6,6 +6,7 @@ import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.data.response.JournalResponse
 import com.mptsix.todaydiary.data.response.LoginResponse
 import com.mptsix.todaydiary.data.response.UserRegisterResponse
+import com.mptsix.todaydiary.data.response.UserSealed
 import com.mptsix.todaydiary.data.user.journal.Journal
 import com.mptsix.todaydiary.service.UserService
 import org.springframework.http.HttpHeaders
@@ -62,5 +63,13 @@ class UserController(
         val userToken: String = header["X-AUTH-TOKEN"]!![0]
         userService.removeUser(userToken)
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/api/v1/user/sealed")
+    fun getSealedUser(@RequestHeader header: HttpHeaders): ResponseEntity<UserSealed> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.getUserSealed(userToken))
     }
 }

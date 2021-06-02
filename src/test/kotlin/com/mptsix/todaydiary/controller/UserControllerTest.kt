@@ -202,4 +202,18 @@ internal class UserControllerTest {
 
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
     }
+
+    @Test
+    fun is_getSealedUser_works_well() {
+        val loginToken: String = loginUser()
+        val url: String = "${serverUrl}/api/v1/user/sealed"
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+
+        val responseEntity: ResponseEntity<Unit> =
+            restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Unit>(httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+    }
 }

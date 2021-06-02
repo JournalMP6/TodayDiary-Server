@@ -5,10 +5,9 @@ import com.mptsix.todaydiary.data.user.UserRepository
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
-import com.mptsix.todaydiary.data.response.JournalResponse
-import com.mptsix.todaydiary.data.response.LoginResponse
-import com.mptsix.todaydiary.data.response.UserRegisterResponse
+import com.mptsix.todaydiary.data.response.*
 import com.mptsix.todaydiary.data.user.journal.Journal
+import com.mptsix.todaydiary.data.user.journal.JournalCategory
 import com.mptsix.todaydiary.data.user.journal.JournalImage
 import com.mptsix.todaydiary.error.exception.ConflictException
 import com.mptsix.todaydiary.error.exception.ForbiddenException
@@ -20,6 +19,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import kotlin.streams.toList
 
 @Service
 class UserService(
@@ -125,5 +125,34 @@ class UserService(
 
     fun removeUser(userToken: String) {
         userRepository.removeUser(getUserIdFromToken(userToken))
+    }
+
+    fun getUserSealed(userToken: String): UserSealed {
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
+
+        return UserSealed(
+            userId = user.userId,
+            userName = user.userName,
+            journalCategoryList = createJournalCategoryList(user.userId),
+            journalList = createJournalSealedList(user)
+        )
+    }
+
+    private fun createJournalCategoryList(userId: String): List<JournalCategoryResponse> {
+        return enumValues<JournalCategory>().map {
+            JournalCategoryResponse(
+                category = it,
+                count = userRepository.findCategorySizeByUserId(it.name, userId)
+            )
+        }
+    }
+
+    private fun createJournalSealedList(user: User): List<JournalSealed> {
+        return user.journalData.map {
+            JournalSealed(
+                timestamp = it.journalDate,
+                mainContent = it.mainJournalContent
+            )
+        }.stream().limit(20).toList()
     }
 }

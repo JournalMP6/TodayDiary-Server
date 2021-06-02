@@ -4,6 +4,7 @@ import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
+import com.mptsix.todaydiary.data.response.UserSealed
 import com.mptsix.todaydiary.data.user.UserRepository
 import com.mptsix.todaydiary.data.user.journal.Journal
 import com.mptsix.todaydiary.data.user.journal.JournalCategory
@@ -318,5 +319,17 @@ internal class UserServiceTest {
 
         val userList: List<User> = mongoTemplate.findAll()
         assertThat(userList.isEmpty()).isEqualTo(true)
+    }
+
+    @Test
+    fun is_getUserSealed_works_well() {
+        val loginToken: String = loginUser()
+        val sealedUser: UserSealed = userService.getUserSealed(loginToken)
+
+        assertThat(sealedUser.journalList.isEmpty()).isEqualTo(true)
+        assertThat(sealedUser.journalCategoryList.size).isEqualTo(enumValues<JournalCategory>().size)
+        sealedUser.journalCategoryList.forEach {
+            assertThat(it.count).isEqualTo(0)
+        }
     }
 }

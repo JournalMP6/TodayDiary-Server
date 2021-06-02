@@ -2,6 +2,7 @@ package com.mptsix.todaydiary.service
 
 import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.request.LoginRequest
+import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.data.user.UserRepository
 import com.mptsix.todaydiary.data.user.journal.Journal
@@ -298,5 +299,14 @@ internal class UserServiceTest {
             println(it.stackTraceToString())
             fail("We've mocked up journal data but it failed")
         }
+    }
+
+    @Test
+    fun is_changePassword_works_well() {
+        val loginToken: String = loginUser()
+        userService.changePassword(loginToken, PasswordChangeRequest("whatever"))
+
+        val user: User = userRepository.findByUserId(mockUser.userId)
+        assertThat(user.userPassword).isEqualTo("whatever")
     }
 }

@@ -1,6 +1,7 @@
 package com.mptsix.todaydiary.controller
 
 import com.mptsix.todaydiary.data.request.LoginRequest
+import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.data.response.JournalResponse
 import com.mptsix.todaydiary.data.response.LoginResponse
@@ -173,5 +174,18 @@ internal class UserControllerTest {
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(responseEntity.hasBody()).isEqualTo(true)
         assertThat(responseEntity.body!!.journalDate).isEqualTo(mockJournal.journalDate)
+    }
+
+    @Test
+    fun is_changePassword_works_well() {
+        val loginToken: String = loginUser()
+        val url: String = "${serverUrl}/api/v1/user"
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+        val responseEntity: ResponseEntity<Unit> =
+            restTemplate.exchange(url, HttpMethod.PUT, HttpEntity<PasswordChangeRequest>(PasswordChangeRequest("test"), httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
     }
 }

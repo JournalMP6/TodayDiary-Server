@@ -1,6 +1,7 @@
 package com.mptsix.todaydiary.controller
 
 import com.mptsix.todaydiary.data.request.LoginRequest
+import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.data.response.JournalResponse
 import com.mptsix.todaydiary.data.response.LoginResponse
@@ -47,5 +48,12 @@ class UserController(
             .body(
                 userService.getJournal(userToken, journalDate)
             )
+    }
+
+    @PutMapping("/api/v1/user")
+    fun changePassword(@RequestHeader header: HttpHeaders, @RequestBody passwordChangeRequest: PasswordChangeRequest): ResponseEntity<Unit> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        userService.changePassword(userToken, passwordChangeRequest)
+        return ResponseEntity.noContent().build()
     }
 }

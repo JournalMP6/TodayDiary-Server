@@ -3,6 +3,7 @@ package com.mptsix.todaydiary.service
 import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.user.UserRepository
 import com.mptsix.todaydiary.data.request.LoginRequest
+import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.data.response.JournalResponse
 import com.mptsix.todaydiary.data.response.LoginResponse
@@ -113,5 +114,12 @@ class UserService(
             logger.error("Cannot get journal data for user: ${user.userId}, with journalDate: $journalDate")
             throw NotFoundException("Cannot get journal data for user: ${user.userId}, with journalDate: $journalDate")
         }
+    }
+
+    fun changePassword(userToken: String, passwordChangeRequest: PasswordChangeRequest) {
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken)).apply {
+            userPassword = passwordChangeRequest.userPassword
+        }
+        userRepository.addUser(user)
     }
 }

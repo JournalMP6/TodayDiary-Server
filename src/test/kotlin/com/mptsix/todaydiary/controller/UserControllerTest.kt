@@ -261,4 +261,20 @@ internal class UserControllerTest {
         assertThat(responseEntity.hasBody()).isEqualTo(true)
         assertThat(responseEntity.body!!.size).isEqualTo(0)
     }
+
+    @Test
+    fun is_findUserByName_works_well() {
+        val loginToken: String = loginUser()
+        val url: String = "${serverUrl}/api/v1/user/test"
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+
+        val responseEntity: ResponseEntity<List<UserFiltered>> =
+            restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Unit>(httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(responseEntity.hasBody()).isEqualTo(true)
+        assertThat(responseEntity.body!!.size).isEqualTo(0)
+    }
 }

@@ -8,6 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.aggregation.*
+import org.springframework.data.mongodb.core.find
 import org.springframework.data.mongodb.core.findOne
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
@@ -46,6 +47,13 @@ class UserRepository(
         }
     }
 
+    private fun findAllByQuery(fieldName: String, fieldTargetValue: String): List<User> {
+        // Find it
+        return mongoTemplate.find<User>(
+            getQueryForFindBy(fieldName, fieldTargetValue)
+        )
+    }
+
     // Add or update user
     fun addUser(user: User): User = mongoTemplate.save(user)
 
@@ -54,6 +62,9 @@ class UserRepository(
 
     // Find User by User Name
     fun findByUserName(userName: String): User = findOneByQuery(userNameField, userName)
+
+    // Find all user by user name
+    fun findAllByUserName(userName: String): List<User> = findAllByQuery(userNameField, userName)
 
     // Find category size by user id / by category name
     fun findCategorySizeByUserId(categoryName: String, userId:String):Int {

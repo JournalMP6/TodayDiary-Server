@@ -92,4 +92,12 @@ class UserController(
             userService.getFollowingUser(userToken)
         )
     }
+
+    @GetMapping("/api/v1/user/{name}")
+    fun findUserByName(@RequestHeader header: HttpHeaders, @PathVariable("name") targetName: String): ResponseEntity<List<UserFiltered>> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        return ResponseEntity.ok(
+            userService.findUserByName(userToken, targetName)
+        )
+    }
 }

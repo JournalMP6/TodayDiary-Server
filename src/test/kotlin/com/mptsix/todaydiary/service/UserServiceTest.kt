@@ -385,4 +385,31 @@ internal class UserServiceTest {
             assertThat(size).isEqualTo(1)
         }
     }
+
+    @Test
+    fun is_findUserByName_works_well() {
+        val loginToken: String = loginUser()
+
+        // Register another 3 user
+        registerUser("test")
+        registerUser("test2")
+        registerUser("test3")
+
+        // Follow one of them
+        userService.followUser(loginToken, "test")
+
+        userService.findUserByName(loginToken, "test").also {
+            assertThat(it.size).isEqualTo(1)
+            assertThat(it[0].isUserFollowedTargetUser).isEqualTo(true) // we followed test user.
+            assertThat(it[0].userId).isEqualTo("test")
+            assertThat(it[0].userName).isEqualTo("test")
+        }
+
+        userService.findUserByName(loginToken, "test2").also {
+            assertThat(it.size).isEqualTo(1)
+            assertThat(it[0].isUserFollowedTargetUser).isEqualTo(false)
+            assertThat(it[0].userId).isEqualTo("test2")
+            assertThat(it[0].userName).isEqualTo("test2")
+        }
+    }
 }

@@ -167,6 +167,23 @@ class UserService(
         }
     }
 
+    fun findUserByName(userToken: String, userName: String): List<UserFiltered> {
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
+        val userList: List<User> = userRepository.findAllByUserName(userName)
+
+        return userList.map {
+            UserFiltered(
+                userName = it.userName,
+                userId = it.userId,
+                isUserFollowedTargetUser = (
+                    user.followList.find { eachString ->
+                        eachString == it.userId
+                    }
+                ) != null
+            )
+        }
+    }
+
     private fun createJournalCategoryList(userId: String): List<JournalCategoryResponse> {
         return enumValues<JournalCategory>().map {
             JournalCategoryResponse(

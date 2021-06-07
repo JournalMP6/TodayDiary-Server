@@ -4,6 +4,7 @@ import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
+import com.mptsix.todaydiary.data.response.UserFiltered
 import com.mptsix.todaydiary.data.response.UserSealed
 import com.mptsix.todaydiary.data.user.UserRepository
 import com.mptsix.todaydiary.data.user.journal.Journal
@@ -52,6 +53,18 @@ internal class UserServiceTest {
         userPasswordAnswer = "WHAT",
         userPasswordQuestion = "WHAT"
     )
+
+    private fun registerUser(userId: String = "test") {
+        val userRegisterRequest: UserRegisterRequest = UserRegisterRequest(
+            userId = userId,
+            userPassword =  "asdf",
+            userName = userId,
+            userDateOfBirth = mockUser.userDateOfBirth,
+            userPasswordAnswer = mockUser.userPasswordAnswer,
+            userPasswordQuestion = mockUser.userPasswordQuestion
+        )
+        userService.registerUser(userRegisterRequest)
+    }
 
     fun loginUser(): String {
         userService.registerUser(
@@ -356,5 +369,20 @@ internal class UserServiceTest {
         val followList: List<String> = userRepository.findByUserId(mockUser.userId).followList
 
         assertThat(followList.isEmpty()).isEqualTo(true)
+    }
+
+    @Test
+    fun is_getFollowingUser_works_well() {
+        val loginToken: String = loginUser()
+        userService.getFollowingUser(loginToken).apply {
+            assertThat(size).isEqualTo(0)
+        }
+        // DB
+        registerUser("mockTesting")
+        userService.followUser(loginToken, "mockTesting")
+
+        userService.getFollowingUser(loginToken).apply {
+            assertThat(size).isEqualTo(1)
+        }
     }
 }

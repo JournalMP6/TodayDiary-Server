@@ -5,6 +5,7 @@ import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
 import com.mptsix.todaydiary.data.response.JournalResponse
 import com.mptsix.todaydiary.data.response.LoginResponse
+import com.mptsix.todaydiary.data.response.UserFiltered
 import com.mptsix.todaydiary.data.response.UserRegisterResponse
 import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.user.journal.Journal
@@ -243,5 +244,21 @@ internal class UserControllerTest {
             restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity<Unit>(httpHeaders))
 
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
+    }
+
+    @Test
+    fun is_getFollowingUser_works_well() {
+        val loginToken: String = loginUser()
+        val url: String = "${serverUrl}/api/v1/user/follow"
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+
+        val responseEntity: ResponseEntity<List<UserFiltered>> =
+            restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Unit>(httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(responseEntity.hasBody()).isEqualTo(true)
+        assertThat(responseEntity.body!!.size).isEqualTo(0)
     }
 }

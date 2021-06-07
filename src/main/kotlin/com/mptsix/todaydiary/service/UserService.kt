@@ -154,6 +154,19 @@ class UserService(
         userRepository.addUser(user)
     }
 
+    fun getFollowingUser(userToken: String): List<UserFiltered> {
+        return userRepository.findByUserId(
+            getUserIdFromToken(userToken)
+        ).followList.map {
+            val user: User = userRepository.findByUserId(it)
+            UserFiltered(
+                userName = user.userName,
+                userId = user.userId,
+                isUserFollowedTargetUser = true // Since we are getting following user.
+            )
+        }
+    }
+
     private fun createJournalCategoryList(userId: String): List<JournalCategoryResponse> {
         return enumValues<JournalCategory>().map {
             JournalCategoryResponse(

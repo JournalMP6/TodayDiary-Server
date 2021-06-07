@@ -3,10 +3,7 @@ package com.mptsix.todaydiary.controller
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
-import com.mptsix.todaydiary.data.response.JournalResponse
-import com.mptsix.todaydiary.data.response.LoginResponse
-import com.mptsix.todaydiary.data.response.UserRegisterResponse
-import com.mptsix.todaydiary.data.response.UserSealed
+import com.mptsix.todaydiary.data.response.*
 import com.mptsix.todaydiary.data.user.journal.Journal
 import com.mptsix.todaydiary.service.UserService
 import org.springframework.http.HttpHeaders
@@ -85,5 +82,14 @@ class UserController(
         val userToken: String = header["X-AUTH-TOKEN"]!![0]
         userService.unfollowUser(userToken, userId)
         return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping("/api/v1/user/follow")
+    fun getFollowingUser(@RequestHeader header: HttpHeaders): ResponseEntity<List<UserFiltered>> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+
+        return ResponseEntity.ok(
+            userService.getFollowingUser(userToken)
+        )
     }
 }

@@ -332,4 +332,29 @@ internal class UserServiceTest {
             assertThat(it.count).isEqualTo(0)
         }
     }
+
+    @Test
+    fun is_followUser_works_well() {
+        val loginToken: String = loginUser()
+        // do
+        userService.followUser(loginToken, "KangDroid")
+
+        // Assert
+        val followList: List<String> = userRepository.findByUserId(mockUser.userId).followList
+
+        assertThat(followList.size).isEqualTo(1)
+        assertThat(followList[0]).isEqualTo("KangDroid")
+    }
+
+    @Test
+    fun is_unfollowingUser_works_well() {
+        val loginToken: String = loginUser()
+        // do
+        userService.followUser(loginToken, "KangDroid")
+        userService.unfollowUser(loginToken, "KangDroid")
+
+        val followList: List<String> = userRepository.findByUserId(mockUser.userId).followList
+
+        assertThat(followList.isEmpty()).isEqualTo(true)
+    }
 }

@@ -72,4 +72,18 @@ class UserController(
             .status(HttpStatus.OK)
             .body(userService.getUserSealed(userToken))
     }
+
+    @PostMapping("/api/v1/user/follow/{id}")
+    fun followUser(@RequestHeader header: HttpHeaders, @PathVariable("id") userId: String): ResponseEntity<Unit> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        userService.followUser(userToken, userId)
+        return ResponseEntity.noContent().build()
+    }
+
+    @DeleteMapping("/api/v1/user/follow/{id}")
+    fun unfollowUser(@RequestHeader header: HttpHeaders, @PathVariable("id") userId: String): ResponseEntity<Unit> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        userService.unfollowUser(userToken, userId)
+        return ResponseEntity.noContent().build()
+    }
 }

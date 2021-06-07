@@ -138,6 +138,22 @@ class UserService(
         )
     }
 
+    fun followUser(userToken: String, targetUserId: String) {
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken)).apply {
+            followList.add(targetUserId)
+        }
+
+        userRepository.addUser(user)
+    }
+
+    fun unfollowUser(userToken: String, targetUserId: String) {
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken)).apply {
+            followList.removeIf { it == targetUserId }
+        }
+
+        userRepository.addUser(user)
+    }
+
     private fun createJournalCategoryList(userId: String): List<JournalCategoryResponse> {
         return enumValues<JournalCategory>().map {
             JournalCategoryResponse(

@@ -216,4 +216,32 @@ internal class UserControllerTest {
 
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
     }
+
+    @Test
+    fun is_followUser_works_well() {
+        val loginToken: String = loginUser()
+        val url: String = "${serverUrl}/api/v1/user/follow/kangdroid"
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+
+        val responseEntity: ResponseEntity<Unit> =
+            restTemplate.exchange(url, HttpMethod.POST, HttpEntity<Unit>(httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
+    }
+
+    @Test
+    fun is_unfollowUser_works_well() {
+        val loginToken: String = loginUser()
+        val url: String = "${serverUrl}/api/v1/user/follow/kangdroid"
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+
+        val responseEntity: ResponseEntity<Unit> =
+            restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity<Unit>(httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
+    }
 }

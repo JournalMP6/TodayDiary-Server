@@ -171,7 +171,9 @@ class UserService(
         val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
         val userList: List<User> = userRepository.findAllByUserName(userName)
 
-        return userList.map {
+        return userList.filter{
+            it.userId != user.userId
+        }.map {
             UserFiltered(
                 userName = it.userName,
                 userId = it.userId,

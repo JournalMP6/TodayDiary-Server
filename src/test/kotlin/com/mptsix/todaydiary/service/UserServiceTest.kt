@@ -412,4 +412,13 @@ internal class UserServiceTest {
             assertThat(it[0].userName).isEqualTo("test2")
         }
     }
+
+    @Test
+    fun is_getSealedUserById_works_well() {
+        registerUser("test")
+
+        val sealedUser: UserSealed = userService.getSealedUserById("test")
+
+        assertThat(sealedUser.userName).isEqualTo("test")
+    }
 }

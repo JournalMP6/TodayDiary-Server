@@ -100,4 +100,11 @@ class UserController(
             userService.findUserByName(userToken, targetName)
         )
     }
+
+    @GetMapping("/api/v1/user/sealed/{userId}")
+    fun getSealedUserById(@RequestHeader header: HttpHeaders, @PathVariable("userId") userId: String): ResponseEntity<UserSealed> {
+        return ResponseEntity.ok(
+            userService.getSealedUserById(userId)
+        )
+    }
 }

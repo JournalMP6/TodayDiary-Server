@@ -186,6 +186,17 @@ class UserService(
         }
     }
 
+    fun getSealedUserById(userId: String): UserSealed {
+        val user: User = userRepository.findByUserId(userId)
+
+        return UserSealed(
+            userId = user.userId,
+            userName = user.userName,
+            journalCategoryList = createJournalCategoryList(user.userId),
+            journalList = createJournalSealedList(user)
+        )
+    }
+
     private fun createJournalCategoryList(userId: String): List<JournalCategoryResponse> {
         return enumValues<JournalCategory>().map {
             JournalCategoryResponse(

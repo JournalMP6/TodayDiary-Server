@@ -3,10 +3,7 @@ package com.mptsix.todaydiary.controller
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
-import com.mptsix.todaydiary.data.response.JournalResponse
-import com.mptsix.todaydiary.data.response.LoginResponse
-import com.mptsix.todaydiary.data.response.UserFiltered
-import com.mptsix.todaydiary.data.response.UserRegisterResponse
+import com.mptsix.todaydiary.data.response.*
 import com.mptsix.todaydiary.data.user.User
 import com.mptsix.todaydiary.data.user.journal.Journal
 import com.mptsix.todaydiary.data.user.journal.JournalCategory
@@ -276,5 +273,19 @@ internal class UserControllerTest {
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(responseEntity.hasBody()).isEqualTo(true)
         assertThat(responseEntity.body!!.size).isEqualTo(0)
+    }
+
+    @Test
+    fun is_getSealedUserById_works_well() {
+        val loginToken: String = loginUser()
+        val url: String = "${serverUrl}/api/v1/user/sealed/KangDroid"
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+
+        val responseEntity: ResponseEntity<UserSealed> =
+            restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Unit>(httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
     }
 }

@@ -1,5 +1,6 @@
 package com.mptsix.todaydiary.controller
 
+import com.mptsix.todaydiary.data.request.AuxiliaryPasswordRequest
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
@@ -106,5 +107,19 @@ class UserController(
         return ResponseEntity.ok(
             userService.getSealedUserById(userId)
         )
+    }
+
+    @PostMapping("/api/v1/user/aux/password")
+    fun registerAuxiliaryPassword(@RequestHeader header: HttpHeaders, @RequestBody auxiliaryPasswordRequest: AuxiliaryPasswordRequest): ResponseEntity<Unit> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        userService.registerAuxiliaryPassword(userToken, auxiliaryPasswordRequest.password)
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/api/v1/user/aux/password/check")
+    fun checkAuxiliaryPassword(@RequestHeader header: HttpHeaders, @RequestBody auxiliaryPasswordRequest: AuxiliaryPasswordRequest): ResponseEntity<Unit> {
+        val userToken: String = header["X-AUTH-TOKEN"]!![0]
+        userService.checkAuxiliaryPassword(userToken, auxiliaryPasswordRequest.password)
+        return ResponseEntity.noContent().build()
     }
 }

@@ -30,7 +30,10 @@ data class User(
     var journalData: MutableList<Journal> = mutableListOf(),
 
     // String: user ID
-    var followList: MutableList<String> = mutableListOf()
+    var followList: MutableList<String> = mutableListOf(),
+
+    // User Auxiliary password
+    var auxiliaryPassword: String? = null
 ): UserDetails {
     override fun getAuthorities(): Collection<GrantedAuthority?>? {
         return roles.stream()

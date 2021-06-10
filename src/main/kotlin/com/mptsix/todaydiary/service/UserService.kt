@@ -197,6 +197,22 @@ class UserService(
         )
     }
 
+    fun registerAuxiliaryPassword(userToken: String, userPassword: String) {
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken)).apply {
+            auxiliaryPassword = userPassword
+        }
+
+        userRepository.addUser(user)
+    }
+
+    fun checkAuxiliaryPassword(userToken: String, userPassword: String) {
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
+
+        if (user.auxiliaryPassword != userPassword) {
+            throw ForbiddenException("Auxiliary Password and input password does not match!")
+        }
+    }
+
     private fun createJournalCategoryList(userId: String): List<JournalCategoryResponse> {
         return enumValues<JournalCategory>().map {
             JournalCategoryResponse(

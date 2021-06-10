@@ -1,5 +1,6 @@
 package com.mptsix.todaydiary.controller
 
+import com.mptsix.todaydiary.data.request.AuxiliaryPasswordRequest
 import com.mptsix.todaydiary.data.request.LoginRequest
 import com.mptsix.todaydiary.data.request.PasswordChangeRequest
 import com.mptsix.todaydiary.data.request.UserRegisterRequest
@@ -287,5 +288,42 @@ internal class UserControllerTest {
             restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Unit>(httpHeaders))
 
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun is_registerAuxiliaryPassword_works_well() {
+        val loginToken: String = loginUser()
+        val url: String = "${serverUrl}/api/v1/user/aux/password"
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+
+        val responseEntity: ResponseEntity<Unit> =
+            restTemplate.exchange(url, HttpMethod.POST, HttpEntity<AuxiliaryPasswordRequest>(AuxiliaryPasswordRequest("1234"), httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
+    }
+
+    @Test
+    fun is_checkAuxiliaryPassword_works_well() {
+        val loginToken: String = loginUser()
+
+        val tmpUrl: String = "${serverUrl}/api/v1/user/aux/password"
+        val tmpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+
+        val tempEntity: ResponseEntity<Unit> =
+            restTemplate.exchange(tmpUrl, HttpMethod.POST, HttpEntity<AuxiliaryPasswordRequest>(AuxiliaryPasswordRequest("1234"), tmpHeaders))
+
+        val url: String = "${serverUrl}/api/v1/user/aux/password/check"
+        val httpHeaders: HttpHeaders = HttpHeaders().apply {
+            put("X-AUTH-TOKEN", listOf(loginToken))
+        }
+
+        val responseEntity: ResponseEntity<Unit> =
+            restTemplate.exchange(url, HttpMethod.POST, HttpEntity<AuxiliaryPasswordRequest>(AuxiliaryPasswordRequest("1234"), httpHeaders))
+
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
     }
 }

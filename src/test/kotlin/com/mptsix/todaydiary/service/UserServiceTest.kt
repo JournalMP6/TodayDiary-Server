@@ -421,4 +421,42 @@ internal class UserServiceTest {
 
         assertThat(sealedUser.userName).isEqualTo("test")
     }
+
+    @Test
+    fun is_registerAuxiliaryPassword_works_well() {
+        val loginToken: String = loginUser()
+
+        // do
+        userService.registerAuxiliaryPassword(loginToken, "123456")
+
+        // check
+        userRepository.findByUserId(mockUser.userId).also {
+            assertThat(it.auxiliaryPassword).isEqualTo("123456")
+        }
+    }
+
+    @Test
+    fun is_checkingAuxiliaryPassword_works_well() {
+        val loginToken: String = loginUser()
+
+        // do
+        userService.registerAuxiliaryPassword(loginToken, "123456")
+
+        // Check
+        runCatching {
+            userService.checkAuxiliaryPassword(loginToken, "123456")
+        }.onFailure {
+            println(it.stackTraceToString())
+            fail("We set correct case of test, but it failed.")
+        }
+
+        // Check[Wrong]
+        runCatching {
+            userService.checkAuxiliaryPassword(loginToken, "123")
+        }.onSuccess {
+            fail("Since we input wrong password, but it succeed instead of throwing ForbiddenException")
+        }.onFailure {
+            assertThat(it is ForbiddenException).isEqualTo(true)
+        }
+    }
 }

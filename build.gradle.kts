@@ -92,6 +92,9 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-impl:0.11.2")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.11.2")
 
+	// Argon2 Related
+	implementation("org.bouncycastle:bcprov-jdk15on:1.64")
+
 	// Spring Annotation Processor
 	compileOnly("org.springframework.boot:spring-boot-configuration-processor")
 

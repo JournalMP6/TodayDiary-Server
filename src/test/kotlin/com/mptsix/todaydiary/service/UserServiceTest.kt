@@ -175,6 +175,7 @@ internal class UserServiceTest {
         runCatching {
             userService.loginUser(loginRequest)
         }.onFailure {
+            println(it.stackTraceToString())
             fail("We registered user, but login failed?")
         }.onSuccess {
             assertThat(it.userToken).isNotEqualTo("")

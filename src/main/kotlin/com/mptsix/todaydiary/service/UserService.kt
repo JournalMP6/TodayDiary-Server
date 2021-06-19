@@ -13,6 +13,7 @@ import com.mptsix.todaydiary.error.exception.ConflictException
 import com.mptsix.todaydiary.error.exception.ForbiddenException
 import com.mptsix.todaydiary.error.exception.NotFoundException
 import com.mptsix.todaydiary.security.JWTTokenProvider
+import com.mptsix.todaydiary.security.PasswordEncryptorService
 import org.bson.BsonBinarySubType
 import org.bson.types.Binary
 import org.slf4j.Logger
@@ -24,7 +25,8 @@ import kotlin.streams.toList
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val jwtTokenProvider: JWTTokenProvider
+    private val jwtTokenProvider: JWTTokenProvider,
+    private val passwordEncryptorService: PasswordEncryptorService
 ) {
     // Logger
     private val logger: Logger = LoggerFactory.getLogger(this::class.java)
@@ -61,7 +63,7 @@ class UserService(
         }
 
         // Register
-        val registeredUser: User = userRepository.addUser(userRegisterRequest.toUser())
+        val registeredUser: User = userRepository.addUser(userRegisterRequest.toUser().apply {userPassword = passwordEncryptorService.encodePlainText(userRegisterRequest.userPassword)})
         return UserRegisterResponse(
             registeredId = registeredUser.userId
         )
@@ -73,7 +75,7 @@ class UserService(
             throw NotFoundException("Cannot find userid: ${loginRequest.userId}")
         }
         val user: User = userRepository.findByUserId(loginRequest.userId)
-        if (user.userPassword != loginRequest.userPassword) {
+        if (!passwordEncryptorService.isMatching(loginRequest.userPassword, user.userPassword)) {
             logger.error("Username is correct, but user password is not found!")
             throw ForbiddenException("Username is correct, but user password is not correct!")
         }

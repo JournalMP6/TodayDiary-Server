@@ -119,9 +119,11 @@ class UserService(
     }
 
     fun changePassword(userToken: String, passwordChangeRequest: PasswordChangeRequest) {
-        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken)).apply {
-            userPassword = passwordChangeRequest.userPassword
+        val user: User = userRepository.findByUserId(getUserIdFromToken(userToken))
+        if (!passwordEncryptorService.isMatching(passwordChangeRequest.previousPassword, user.userPassword)) {
+            throw ForbiddenException("Password is not correct!")
         }
+        user.userPassword = passwordEncryptorService.encodePlainText(passwordChangeRequest.userPassword)
         userRepository.addUser(user)
     }
 

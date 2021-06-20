@@ -185,7 +185,7 @@ internal class UserControllerTest {
             put("X-AUTH-TOKEN", listOf(loginToken))
         }
         val responseEntity: ResponseEntity<Unit> =
-            restTemplate.exchange(url, HttpMethod.PUT, HttpEntity<PasswordChangeRequest>(PasswordChangeRequest("test"), httpHeaders))
+            restTemplate.exchange(url, HttpMethod.PUT, HttpEntity<PasswordChangeRequest>(PasswordChangeRequest("test", "test"), httpHeaders))
 
         assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.NO_CONTENT)
     }

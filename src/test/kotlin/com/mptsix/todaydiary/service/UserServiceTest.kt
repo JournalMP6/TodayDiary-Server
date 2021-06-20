@@ -323,10 +323,24 @@ internal class UserServiceTest {
     @Test
     fun is_changePassword_works_well() {
         val loginToken: String = loginUser()
-        userService.changePassword(loginToken, PasswordChangeRequest("whatever"))
+        val beforeUser: User = userRepository.findByUserId(mockUser.userId)
+        userService.changePassword(loginToken, PasswordChangeRequest(mockUser.userPassword, "whatever"))
 
         val user: User = userRepository.findByUserId(mockUser.userId)
-        assertThat(user.userPassword).isEqualTo("whatever")
+        assertThat(user.userPassword).isNotEqualTo("whatever")
+        assertThat(user.userPassword).isNotEqualTo(beforeUser.userPassword)
+    }
+
+    @Test
+    fun is_changePassword_throws_forbidden() {
+        val loginToken: String = loginUser()
+        runCatching {
+            userService.changePassword(loginToken, PasswordChangeRequest("mockUser.userPassword", "whatever"))
+        }.onSuccess {
+            fail("Password is wrong, but succeed?")
+        }.onFailure {
+            assertThat(it is ForbiddenException).isEqualTo(true)
+        }
     }
 
     @Test

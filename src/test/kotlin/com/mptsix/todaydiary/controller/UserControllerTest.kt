@@ -132,6 +132,7 @@ internal class UserControllerTest {
     @Test
     fun is_registerJournal_works_well() {
         val mockJournal: Journal = Journal(
+            mainTitle = "",
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
             journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
@@ -155,6 +156,7 @@ internal class UserControllerTest {
     @Test
     fun is_getJournal_works_well() {
         val mockJournal: Journal = Journal(
+            mainTitle = "",
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
             journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,

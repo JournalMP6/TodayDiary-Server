@@ -120,6 +120,7 @@ internal class UserRepositoryTest {
             userPasswordQuestion = "WHAT",
             journalData = mutableListOf(
                 Journal(
+                    mainTitle = "",
                     mainJournalContent = "",
                     journalLocation = "",
                     journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
@@ -127,6 +128,7 @@ internal class UserRepositoryTest {
                     journalDate = -1
                 ),
                 Journal(
+                    mainTitle = "",
                     mainJournalContent = "",
                     journalLocation = "",
                     journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
@@ -134,6 +136,7 @@ internal class UserRepositoryTest {
                     journalDate = -1
                 ),
                 Journal(
+                    mainTitle = "",
                     mainJournalContent = "",
                     journalLocation = "",
                     journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,

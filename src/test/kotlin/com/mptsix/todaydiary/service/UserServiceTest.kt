@@ -229,7 +229,7 @@ internal class UserServiceTest {
     @Test
     fun is_registerJournal_404_crazy_token() {
         runCatching {
-            userService.registerJournal("whatever", Journal("", "", JournalCategory.ACHIEVEMENT_JOURNAL, "", 10, JournalImage()))
+            userService.registerJournal("whatever", Journal("", "", "", JournalCategory.ACHIEVEMENT_JOURNAL, "", 10, JournalImage()))
         }.onSuccess {
             fail("Token is invalid and it succeed?")
         }.onFailure {
@@ -241,6 +241,7 @@ internal class UserServiceTest {
     fun is_registerJournal_registers_well() {
         val userToken: String = loginUser()
         val mockJournal: Journal = Journal(
+            mainTitle = "",
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
             journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
@@ -261,6 +262,7 @@ internal class UserServiceTest {
     fun is_registerJournal_edit_well() {
         val userToken: String = loginUser()
         val mockJournal: Journal = Journal(
+            mainTitle = "",
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
             journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
@@ -295,6 +297,7 @@ internal class UserServiceTest {
     fun is_getJournal_works_well() {
         val loginToken: String = loginUser()
         val mockJournal: Journal = Journal(
+            mainTitle = "",
             mainJournalContent = "Today was great!",
             journalLocation = "Somewhere over the rainbow!",
             journalCategory = JournalCategory.ACHIEVEMENT_JOURNAL,
